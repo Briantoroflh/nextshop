@@ -2,6 +2,8 @@ package entities
 
 import (
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserRole string
@@ -24,4 +26,17 @@ type Users struct {
 	DeletedAt    *time.Time `json:"deleted_at,omitempty" gorm:"index"`
 	CreatedAt    time.Time  `json:"created_at" gorm:"not null;default:CURRENT_TIMESTAMP"`
 	UpdatedAt    time.Time  `json:"updated_at" gorm:"not null;default:CURRENT_TIMESTAMP"`
+}
+
+func (u *Users) HashPassword(password string) error {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	if err != nil {
+		return err
+	}
+	u.PasswordHash = string(bytes)
+	return nil
+}
+
+func (u *Users) CheckPassword(providedPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(providedPassword))
 }

@@ -12,36 +12,42 @@ import (
 func SeedDatabase(db *gorm.DB) error {
 	log.Println("🌱 Seeding database with sample data...")
 
-	// Seed Users
+	// Seed Users (use entity's HashPassword function)
 	users := []entities.Users{
 		{
-			FullName:     stringPtr("Admin User"),
-			Email:        "admin@example.com",
-			Phone:        stringPtr("+1234567890"),
-			PasswordHash: "$2a$10$example.hash.for.password123", // This should be properly hashed
-			Role:         entities.UserRoleAdmin,
-			IsActive:     true,
+			FullName: stringPtr("Admin User"),
+			Email:    "admin@example.com",
+			Phone:    stringPtr("+1234567890"),
+			Role:     entities.UserRoleAdmin,
+			IsActive: true,
 		},
 		{
-			FullName:     stringPtr("John Seller"),
-			Email:        "seller@example.com",
-			Phone:        stringPtr("+1234567891"),
-			PasswordHash: "$2a$10$example.hash.for.password123",
-			Role:         entities.UserRoleSeller,
-			IsActive:     true,
+			FullName: stringPtr("John Seller"),
+			Email:    "seller@example.com",
+			Phone:    stringPtr("+1234567891"),
+			Role:     entities.UserRoleSeller,
+			IsActive: true,
 		},
 		{
-			FullName:     stringPtr("Jane Buyer"),
-			Email:        "buyer@example.com",
-			Phone:        stringPtr("+1234567892"),
-			PasswordHash: "$2a$10$example.hash.for.password123",
-			Role:         entities.UserRoleBuyer,
-			IsActive:     true,
+			FullName: stringPtr("Jane Buyer"),
+			Email:    "buyer@example.com",
+			Phone:    stringPtr("+1234567892"),
+			Role:     entities.UserRoleBuyer,
+			IsActive: true,
 		},
 	}
 
-	for _, user := range users {
-		if err := db.FirstOrCreate(&user, entities.Users{Email: user.Email}).Error; err != nil {
+	// Default seed password (change as needed)
+	defaultPassword := "password123"
+
+	for i := range users {
+		// Hash password using entity method
+		if err := users[i].HashPassword(defaultPassword); err != nil {
+			return err
+		}
+
+		// Use FirstOrCreate with email as unique key
+		if err := db.FirstOrCreate(&users[i], entities.Users{Email: users[i].Email}).Error; err != nil {
 			return err
 		}
 	}
