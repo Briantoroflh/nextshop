@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"nextshop/cmd/config"
 	"nextshop/cmd/database"
-
 	"github.com/gin-gonic/gin"
 )
 
