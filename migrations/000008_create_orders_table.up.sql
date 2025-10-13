@@ -1,6 +1,9 @@
 -- 008_create_orders_table.sql
 -- Main orders with payment, shipping, and status
 
+DROP TYPE IF EXISTS order_status CASCADE;
+DROP TYPE IF EXISTS payment_status CASCADE;
+
 CREATE TYPE order_status AS ENUM ('pending', 'paid', 'shipped', 'delivered', 'cancelled');
 CREATE TYPE payment_status AS ENUM ('pending', 'success', 'failed', 'refunded');
 
